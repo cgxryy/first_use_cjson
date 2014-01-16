@@ -74,9 +74,9 @@ int deal_info(char *info)
 
 void send_info()
 {
-	char cmd[100] = "wget http://www.weather.com.cn/data/sk/";
+	char cmd[100] = "wget http://m.weather.com.cn/data/";
 	
-	sprintf(cmd, "wget http://www.weather.com.cn/data/sk/%s.html", citycode);
+	sprintf(cmd, "wget http://m.weather.com.cn/data/%s.html", citycode);
 	
 	system(cmd);
 }
@@ -101,8 +101,9 @@ void check_info()
 
 void doit(char *text)
 {
-	char *out;
-	cJSON *json;
+	cJSON 	*json;
+	cJSON 	*move;
+	int   	i;
 
 	json = cJSON_Parse(text);
 	if (!json)
@@ -111,10 +112,27 @@ void doit(char *text)
 	}
 	else 
 	{
-		out = cJSON_Print(json);
+		move = json->child->child;
+		
+
+		printf("\n\n\n\n");
+		for ( i = 1; move != NULL; move = move->next, i++)
+		{
+			if (i <= 5)
+			      printf("%s ", move->valuestring);
+			if ((i >= 8 && i <= 10) 
+				|| (i >= 20 && i <= 22)
+				|| (i >= 52 && i <= 54))
+			      printf("%s\t\t", move->valuestring);
+			if (i >= 66 && i <= 67)
+			      printf("今天穿衣指数:\n%s\n", move->valuestring);
+			if (i == 68 || i == 69)
+			      printf("48小时穿衣指数:\n%s\n", move->valuestring);
+			if (i == 5 || i == 10 || i == 22 || i == 54)
+			      printf("\n");
+		}
+
 		cJSON_Delete(json);
-		printf("%s\n", out);
-		free(out);
 	}
 }
 
